@@ -1,6 +1,6 @@
 <?php
 
-namespace backend\models\forms;
+namespace console\models;
 
 
 use yii\base\Model;
@@ -34,12 +34,11 @@ class UserTextUtilForm extends Model
      */
     private $responseArray = [];
 
-    public function rules()
-    {
-        return [
-            [['csvFile'], 'file', 'skipOnEmpty' => false, 'extensions' => 'csv', 'checkExtensionByMimeType'=>false],
-        ];
-    }
+    /**
+     * @var array
+     */
+    private $usersArray = [];
+
 
     public static function delimiterTypes()
     {
@@ -59,90 +58,53 @@ class UserTextUtilForm extends Model
         if (!$this->validate()) {
             return false;
         }
+
         if (!$this->setDelimiter()) {
             return false;
         }
 
-        $uploadDir = \Yii::getAlias('@filesUploads') . '/' . self::FOLDER_CSV;
-        if (!file_exists($uploadDir)) {
-            FileHelper::createDirectory($uploadDir);
-        }
-
-        $fileName = \Yii::$app->security->generateRandomString() . '.' . $this->csvFile->extension;
-        $filePath = $uploadDir . '/' . $fileName;
-
-        $this->filePath = $filePath;
-
-        Yii::trace($filePath);
-
-        $this->csvFile->saveAs($filePath);
-
-        $csvArr = $this->parseCsv();
-        unlink($filePath);
-        if (empty($csvArr)) {
+        if (!$this->parseCsv()) {
             return false;
         }
 
-        if (!$this->saveInDb($csvArr)) {
-            return false;
+        switch ($this->mode) {
+            case self::MODE_COUNTAVERAGE:
+                $this->countAvgLines();
+                break;
+            case self::MODE_REPLACEDATES:
+                $this->replaceDates();
+                break;
+            default:
+                $this->addError('','Unknown mode selected');
+                break;
         }
+
 
         return true;
     }
 
 
+
+
     /**
-     * Прочитать csv файл и получить таблицу в виде двумерного массива
+     * Загрузка пользователей в массив
      * @return array|bool
      */
     public function parseCsv()
     {
-        $filePath = $this->filePath;
+        $filePath = "console/files/people.csv";
 
         if (!file_exists($filePath) || !is_readable($filePath)) {
-            $this->addError('', 'Не удалось найти файл');
+            $this->addError('', "Can't open file");
             return false;
         }
 
-        $rawStr = file_get_contents($filePath);
-        $utf8str = EncodingHelper::convertToUtf8($rawStr);
-        $linesArr = explode(PHP_EOL, $utf8str);
-        if (empty($linesArr)) {
-            $this->addError('', 'Файл пустой');
-            return false;
+        $handle = fopen($filePath, "r");
+        while (!feof($handle)) {
+            $buffer = fgets($handle, 4096);
+            $userInfo = explode($this->delimiter, $buffer);
+            $this->usersArray[$userInfo[0]] = $userInfo[1];
         }
-
-
-        $resultArr = [];
-        $cellsCount = 0;// Количество столбцов
-
-        foreach ($linesArr as $line) {
-
-            $row = str_getcsv($line, $this->delimitter);
-            $currentCellsCount = count($row); // Количество столбцов в текущей строке
-
-            if ($currentCellsCount > $cellsCount) {
-                $cellsCount = $currentCellsCount;
-            }
-
-            if ($currentCellsCount < 10) {
-                continue;
-            }
-
-            $resultArr[] = $row;
-
-        }
-
-        $rowsCount = count($resultArr); // Количество строк
-
-        \Yii::trace("Получен массив из csv файла размером: {$rowsCount} x {$cellsCount}");
-
-        if ($rowsCount < 1) {
-            $this->addError('', 'Файл пустой');
-            return false;
-        }
-
-        return $resultArr;
     }
 
 
@@ -153,77 +115,9 @@ class UserTextUtilForm extends Model
     {
         $this->delimiter = self::delimiterTypes()[$this->delimiter];
         if (empty($this->delimiter)) {
-            $this->addError('', 'Не найден указанный разделитель');
+            $this->addError('', 'Unknown delimiter');
             return false;
         }
-
-        return true;
-    }
-
-
-    /**
-     * Сохранить данные из таблицы в виде двумерного массива в базу данных
-     * @param $arr
-     * @return bool
-     * @throws \yii\db\Exception
-     */
-    private function saveInDb($arr)
-    {
-        if (empty($arr)) {
-            return false;
-        }
-
-        $productCount = 0;
-
-        $db = \Yii::$app->db;
-        $transaction = $db->beginTransaction();
-        $skipHeader = true;
-
-
-        foreach ($arr as $row) {
-            if (count($row) < 2) {
-                continue;
-            }
-            if ($skipHeader) {
-                $skipHeader = false;
-                continue;
-            }
-
-            $product = new Product();
-            $product->name = $row[0];
-            $product->categoryId = $this->categoryId;
-            $product->companyId = $this->companyId;
-            $product->inStock = Product::IS_IN_STOCK;
-            $product->price = (float)$row[2];
-            $product->productDescription = $row[3];
-            $product->calories = !empty($row[4]) ? (float)$row[4] : null;
-            $product->proteins = !empty($row[5]) ? (float)$row[5] : null;
-            $product->fat = !empty($row[6]) ? (float)$row[6] : null;
-            $product->carbohydrates = !empty($row[7]) ? (float)$row[7] : null;
-            $product->weight = (float)$row[8];
-            $product->unitType = !empty($row[9]) ? self::unitTypes()[$row[9]] : 1;
-            if ($product->save()) {
-                $productCount++;
-                $model = new ProductImage();
-                $model->productId = $product->productId;
-                $binaryImage = CurlComponent::sendJsonRequest($row[1]);
-                /**
-                 * @var File $file
-                 */
-                $file = new File();
-                if ($file->saveBinaryImage($binaryImage, ProductImage::FOLDER_PRODUCT_ICONS)) {
-                    $model->fileId = $file->fileId;
-                    $model->save();
-                }
-            }
-        }
-
-        $transaction->commit();
-
-        $message = "Добавлено товаров: {$productCount}";
-
-        Yii::trace($message);
-        Yii::$app->session->setFlash('success', $message);
 
         return true;
     }

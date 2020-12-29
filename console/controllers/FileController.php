@@ -3,7 +3,7 @@ namespace console\controllers;
 
 use Yii;
 use yii\console\Controller;
-use backend\models\forms\UserTextUtilForm;
+use console\models\UserTextUtilForm;
 
 class FileController extends Controller
 {
@@ -16,7 +16,7 @@ class FileController extends Controller
         if ($form->process()) {
             $response = $form->getSuccessResponse();
         } else {
-            $response = $form->getFirstErrors()[0];
+            $response = $form->getFirstErrors();
         }
 
         echo $response;
