@@ -149,6 +149,10 @@ class UserTextUtilForm extends Model
         while (!feof($handle)) {
             $buffer = fgets($handle, 4096);
             $userInfo = explode($this->delimiter, $buffer);
+            if (count($userInfo) < 2) {
+                $this->addError('', 'Empty data');
+                return false;
+            }
             $this->usersArray[trim($userInfo[0])] = trim($userInfo[1]);
         }
 
