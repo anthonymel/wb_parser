@@ -16,7 +16,7 @@ class FileController extends Controller
         if ($form->process()) {
             $response = $form->getSuccessResponse();
         } else {
-            $response = $form->getFirstErrors();
+            $response = $form->getFirstError('');
         }
 
         echo $response;
