@@ -1,4 +1,4 @@
-# Базовый парсер для WB
+# Dummy goods parser for WB
 ## Usage: 
 ```
 php yii file/parse-catalog
