@@ -1,2 +1,2 @@
 Usage: 
-php yii file/parse-catalog
+<php yii file/parse-catalog>
