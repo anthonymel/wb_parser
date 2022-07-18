@@ -12,28 +12,81 @@
         "irc": "irc://irc.freenode.net/yii",
         "source": "https://github.com/yiisoft/yii2"
     },
-    "minimum-stability": "stable",
+    "minimum-stability": "dev",
+    "prefer-stable": true,
     "require": {
-        "php": ">=5.4.0",
-        "yiisoft/yii2": "~2.0.6",
-        "yiisoft/yii2-bootstrap": "~2.0.0",
-        "yiisoft/yii2-swiftmailer": "~2.0.0"
+        "php": ">=7.2",
+        "yiisoft/yii2": "~2.0.43",
+        "yiisoft/yii2-bootstrap4" : "^2.0.10",
+        "yiisoft/yii2-swiftmailer": "~2.0.7",
+        "ext-curl": "*",
+        "morozovsk/yii2-websocket": "*",
+        "morozovsk/websocket-examples": "*",
+        "kartik-v/yii2-krajee-base": "*",
+        "kartik-v/yii2-widget-select2": "@dev",
+        "kartik-v/yii2-widget-depdrop": "@dev",
+        "kartik-v/yii2-widget-datetimepicker": "*",
+        "kartik-v/yii2-widget-datepicker": "@dev",
+        "kartik-v/yii2-nav-x": "*",
+        "kartik-v/yii2-date-range": "*",
+        "2amigos/yii2-file-upload-widget": "~1.0.9",
+        "jino5577/yii2-date-range-picker": "*",
+        "mabrahamde/idna-converter": "dev-master",
+        "la-haute-societe/yii2-save-relations-behavior": "*",
+        "mootensai/yii2-enhanced-gii": "dev-master",
+        "kartik-v/yii2-tree-manager": "dev-master",
+        "mootensai/yii2-relation-trait": "*",
+        "udokmeci/yii2-phone-validator" : "~1.0.3",
+        "php-ffmpeg/php-ffmpeg" : "^0.17.0",
+        "perminder-klair/yii2-videojs": "dev-master",
+        "hosannahighertech/yii2-audiojs": "dev-master",
+        "kop/yii2-scroll-pager": "dev-master",
+        "newerton/yii2-fancybox": "dev-master",
+        "kartik-v/yii2-detail-view": "dev-master",
+        "mjaschen/phpgeo": "*",
+        "ext-mbstring": "*",
+        "zircote/swagger-php": "~3.1.0",
+        "rmrevin/yii2-fontawesome": "~3.7",
+        "kartik-v/yii2-bootstrap4-dropdown": "@dev",
+        "2amigos/yii2-ckeditor-widget" : "@dev",
+        "ext-dom": "*"
     },
     "require-dev": {
-        "yiisoft/yii2-debug": "~2.0.0",
-        "yiisoft/yii2-gii": "~2.0.0",
-        "yiisoft/yii2-faker": "~2.0.0",
+        "yiisoft/yii2-debug": "~2.0.14",
+        "yiisoft/yii2-gii": "~2.0.8",
+        "yiisoft/yii2-faker": "~2.0.5",
 
-        "codeception/base": "^2.2.3",
-        "codeception/verify": "~0.3.1"
+        "codeception/base": "*",
+        "codeception/verify": "*"
     },
-    "config": {
-        "process-timeout": 1800,
-        "fxp-asset":{
-            "installer-paths": {
-                "npm-asset-library": "vendor/npm",
-                "bower-asset-library": "vendor/bower"
+    "repositories" : [
+        {
+            "type": "composer",
+            "url": "https://asset-packagist.org",
+            "options": {
+                "ssl": {
+                    "verify_peer": false
+                }
             }
         }
+    ],
+    "config": {
+        "process-timeout": 1800,
+        "fxp-asset": {
+            "enabled": false
+        },
+        "github-oauth": {
+
+        },
+        "allow-plugins": {
+            "yiisoft/yii2-composer": true
+        }
+    },
+    "scripts": {
+        "post-install-cmd": [
+            "php init --env=Development --overwrite=n",
+            "mkdir frontend/web/uploads",
+            "chmod -R 777 frontend/web/uploads"
+        ]
     }
 }
