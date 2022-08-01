@@ -11,7 +11,7 @@ return [
             'host' => 'https://www.wildberries.ru',
             'categoryUrl' => 'https://www.wildberries.ru/webapi/menu/main-menu-ru-ru.json',
             'productUrl' => 'https://wbx-content-v2.wbstatic.net/ru/',
-            'productUrlv2' => 'https://card.wb.ru/cards/detail?spp=0&emp=0&locale=ru&lang=ru&curr=rub&nm=',
+            'productUrlv2' => 'https://card.wb.ru/cards/detail?spp=0&dest=-1075831,-115114,-1662421,123586143&emp=0&locale=ru&lang=ru&curr=rub&nm=',
             'priceHistoryUrl' => 'https://wbx-content-v2.wbstatic.net/price-history/',
             'productListUrl' => 'https://catalog.wb.ru/catalog/',
             'curlOpt' => [
