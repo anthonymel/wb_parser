@@ -26,9 +26,12 @@ class Parser extends Component
         return $this->sendGetRequest($this->productUrlv2 . $productId);
     }
 
-    public function loadProductList($shard, $query)
+    public function loadProductList($shard, $query, $page = 1)
     {
-        return $this->sendGetRequest($this->productListUrl . "$shard/catalog?lang=ru&locale=ru&reg=0&$query");
+        $minPrice = \Yii::$app->params['minFilterPrice'];
+        $maxPrice = \Yii::$app->params['maxFilterPrice'];
+        $sort = \Yii::$app->params['sort'];
+        return $this->sendGetRequest($this->productListUrl . "$shard/catalog?lang=ru&page=$page&sort=$sort&priceU=$minPrice;$maxPrice&locale=ru&reg=0&$query");
     }
 
     public function loadProductPriceHistory($productId)
@@ -58,7 +61,8 @@ class Parser extends Component
 
         $result = curl_exec($ch);
         if (curl_exec($ch) === false) {
-            throw new \Exception(curl_errno($ch) . ': ' . curl_error($ch) . $url);
+            var_dump($url);
+            return 0;
         }
         curl_close($ch);
 
@@ -88,5 +92,12 @@ class Parser extends Component
             (int)$salePriceU,
             (int)$priceU
         ]);
+    }
+
+    public static function prepareProductString($string)
+    {
+        $result = $string;
+        $startLength = strlen($string) - 4;
+        return substr_replace($result, '0000', $startLength);
     }
 }

@@ -49,7 +49,8 @@
         "rmrevin/yii2-fontawesome": "~3.7",
         "kartik-v/yii2-bootstrap4-dropdown": "@dev",
         "2amigos/yii2-ckeditor-widget" : "@dev",
-        "ext-dom": "*"
+        "ext-dom": "*",
+        "longman/telegram-bot": "^0.64.0"
     },
     "require-dev": {
         "yiisoft/yii2-debug": "~2.0.14",
