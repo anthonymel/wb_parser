@@ -6,6 +6,10 @@ To start parsing use command in terminal from project directory:
 ```
 php yii file/parse-catalog [catalogname]
 ```
+## Example channel:
+```
+https://t.me/salesonmarket
+```
 ## Result example:
 ```
 https://www.wildberries.ru/catalog/110xx3095/detail.aspx?targetUrl=GP
