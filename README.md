@@ -1,6 +1,7 @@
 # Dummy goods parser for WB
 ## Usage: 
-before execution add your telegram bot token and channel id into common/config/params.php
+before execution add your telegram bot token and channel id into common/config/params.php. Also, you can change settings in same file.
+To start parsing use command in terminal from project directory:
 ```
 php yii file/parse-catalog [catalogname]
 ```
