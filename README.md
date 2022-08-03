@@ -1,4 +1,5 @@
 # Dummy goods parser for WB
+This parser can be used with cron jobs. After finding cheap product or product with big discount, bot will send message to your channel. You need to add bot to your channel with rights to posting messages.
 ## Usage: 
 before execution add your telegram bot token and channel id into common/config/params.php. Also, you can change settings in same file.
 To start parsing use command in terminal from project directory:
